@@ -21,7 +21,7 @@ export default function Dashboard() {
   return <div className="dashboard-page">
     {apiEnabled && apiError && <div className="api-warning" role="alert"><strong>API connection issue</strong><span>{apiError}</span></div>}
     <div className="welcome-banner"><div><span className="banner-label">YOUR OPERATIONS, AT A GLANCE</span><h2>Good day, Admin <span>✦</span></h2><p>Here’s the latest snapshot of your property workspace.</p></div><div className="banner-art"><div className="art-ring ring-one" /><div className="art-ring ring-two" /><div className="art-building">⌂</div><span className="art-spark spark-a">✦</span><span className="art-spark spark-b">✧</span></div></div>
-    <div className="section-heading"><div><h2>Overview</h2><p>A live summary of the data in this browser.</p></div><span className="updated-pill"><span /> DEMO DATA</span></div>
+    <div className="section-heading"><div><h2>Overview</h2><p>{apiEnabled ? 'Live summary from your connected property database.' : 'A live summary of the data in this browser.'}</p></div><span className="updated-pill"><span /> DEMO DATA</span></div>
     <div className="stats-grid">
       <StatCard label="Active guests" value={activeGuests} note="Residents currently staying" icon="♙" tone="blue" />
       <StatCard label="Room occupancy" value={occupancy + '%'} note={occupiedBeds + ' of ' + bedCapacity + ' beds occupied'} icon="⌂" tone="violet" />
