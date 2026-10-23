@@ -18,7 +18,7 @@ const columns = [
 export default function Staff() {
   const { staff, setStaff } = useStayManager();
   function save(draft, editing) {
-    if (!draft.name?.trim() || !draft.phone?.trim()) { window.alert('Enter the staff member name and phone number.'); return; }
+    if (!draft.name?.trim() || !draft.phone?.trim()) { window.alert('Enter the staff member name and phone number.'); return false; }
     const person = { ...draft, name: draft.name.trim(), phone: draft.phone.trim() };
     setStaff(current => editing ? current.map(item => item.id === editing.id ? { ...person, id: editing.id } : item) : [...current, createRecord(person)]);
   }
