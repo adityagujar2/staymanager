@@ -1,5 +1,5 @@
 import ManagementPage from '../components/ManagementPage.jsx';
-import { createRecord, money, useStayManager } from '../context/StayManagerContext.jsx';
+import { money, useStayManager } from '../context/StayManagerContext.jsx';
 
 const fields = [
   { name: 'number', label: 'Room number', required: true, placeholder: 'e.g. 103' },
@@ -16,7 +16,7 @@ const columns = [
 ];
 
 export default function Rooms() {
-  const { rooms, setRooms } = useStayManager();
+  const { rooms, saveRecord, deleteRecord } = useStayManager();
   const normalized = rooms.map(room => ({ ...room, status: Number(room.occupied) >= Number(room.capacity) ? 'Full' : Number(room.occupied) === 0 ? 'Vacant' : 'Available' }));
   function save(draft, editing) {
     const capacity = Number(draft.capacity);
@@ -26,7 +26,7 @@ export default function Rooms() {
       return false;
     }
     const room = { ...draft, capacity, occupied, monthlyRent: Number(draft.monthlyRent), status: occupied >= capacity ? 'Full' : occupied === 0 ? 'Vacant' : 'Available' };
-    setRooms(current => editing ? current.map(item => item.id === editing.id ? { ...room, id: editing.id } : item) : [...current, createRecord(room)]);
+    return saveRecord('rooms', room, editing);
   }
-  return <ManagementPage title="Rooms" description="Manage room inventory, occupancy, and monthly rent." records={normalized} fields={fields} columns={columns} onSave={save} onDelete={id => setRooms(current => current.filter(room => room.id !== id))} addLabel="Add room" searchPlaceholder="Search by room number or sharing type..." filterKey="status" filterOptions={['Vacant', 'Available', 'Full']} summary={[{ label: 'Total rooms', value: rooms.length }, { label: 'Beds available', value: rooms.reduce((sum, room) => sum + Math.max(0, Number(room.capacity) - Number(room.occupied)), 0) }, { label: 'Fully occupied', value: normalized.filter(room => room.status === 'Full').length }, { label: 'Monthly rent potential', value: money(rooms.reduce((sum, room) => sum + Number(room.monthlyRent) * Number(room.capacity), 0)) }]} />;
+  return <ManagementPage title="Rooms" description="Manage room inventory, occupancy, and monthly rent." records={normalized} fields={fields} columns={columns} onSave={save} onDelete={id => deleteRecord('rooms', id)} addLabel="Add room" searchPlaceholder="Search by room number or sharing type..." filterKey="status" filterOptions={['Vacant', 'Available', 'Full']} summary={[{ label: 'Total rooms', value: rooms.length }, { label: 'Beds available', value: rooms.reduce((sum, room) => sum + Math.max(0, Number(room.capacity) - Number(room.occupied)), 0) }, { label: 'Fully occupied', value: normalized.filter(room => room.status === 'Full').length }, { label: 'Monthly rent potential', value: money(rooms.reduce((sum, room) => sum + Number(room.monthlyRent) * Number(room.capacity), 0)) }]} />;
 }
