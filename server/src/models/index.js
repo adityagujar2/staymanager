@@ -56,7 +56,7 @@ const maintenanceSchema = new Schema({
   room: { type: String, required: true, trim: true, maxlength: 60 },
   priority: { type: String, required: true, enum: ['Low', 'Medium', 'High', 'Urgent'], default: 'Medium' },
   status: { type: String, required: true, enum: ['Open', 'In Progress', 'Completed'], default: 'Open' },
-  createdAt: { type: String, required: true },
+  reportedDate: { type: String, required: true },
   notes: { type: String, default: '', maxlength: 2000 },
 }, options);
 
