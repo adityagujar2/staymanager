@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react';
 
 function emptyDraft(fields) {
   return fields.reduce((draft, field) => {
-    draft[field.name] = field.defaultValue ?? (field.type === 'select' ? (field.options?.[0]?.value ?? '') : '');
+    const firstOption = field.options?.[0];
+    const firstValue = typeof firstOption === 'string' ? firstOption : (firstOption?.value ?? '');
+    draft[field.name] = field.defaultValue ?? (field.type === 'select' ? firstValue : '');
     return draft;
   }, {});
 }
@@ -10,7 +12,7 @@ function emptyDraft(fields) {
 export default function ManagementPage({
   title, description, records, fields, columns, onSave, onDelete,
   addLabel = 'Add record', searchPlaceholder = 'Search records...',
-  filterKey = 'status', filterOptions = [], summary = [], rowActions = [],
+  filterKey = 'status', filterOptions = [], summary = [], rowActions = () => [],
 }) {
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
