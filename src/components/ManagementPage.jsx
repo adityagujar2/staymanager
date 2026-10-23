@@ -19,6 +19,7 @@ export default function ManagementPage({
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [draft, setDraft] = useState(() => emptyDraft(fields));
+  const [saveError, setSaveError] = useState('');
 
   const visibleRecords = useMemo(() => records.filter(record => {
     const text = Object.values(record).join(' ').toLowerCase();
@@ -29,11 +30,13 @@ export default function ManagementPage({
 
   function openCreate() {
     setEditing(null);
+    setSaveError('');
     setDraft(emptyDraft(fields));
     setModalOpen(true);
   }
   function openEdit(record) {
     setEditing(record);
+    setSaveError('');
     setDraft({ ...emptyDraft(fields), ...record });
     setModalOpen(true);
   }
@@ -41,14 +44,23 @@ export default function ManagementPage({
     setModalOpen(false);
     setEditing(null);
   }
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
-    const result = onSave(draft, editing);
-    if (result === false) return;
-    closeModal();
+    setSaveError('');
+    try {
+      const result = await onSave(draft, editing);
+      if (result === false) return;
+      closeModal();
+    } catch (error) { setSaveError(error.message || 'Could not save this record.'); }
   }
-  function remove(record) {
-    if (window.confirm('Delete this record? This action cannot be undone.')) onDelete(record.id);
+  async function remove(record) {
+    if (!window.confirm('Delete this record? This action cannot be undone.')) return;
+    try { await onDelete(record.id); }
+    catch (error) { window.alert(error.message || 'Could not delete this record.'); }
+  }
+  async function runAction(action, record) {
+    try { await action.onClick(record); }
+    catch (error) { window.alert(error.message || 'That action could not be completed.'); }
   }
 
   return (
@@ -61,7 +73,7 @@ export default function ManagementPage({
           <span className="record-count">{visibleRecords.length} records</span>
         </div>
         <div className="table-scroll"><table className="data-table"><thead><tr>{columns.map(column => <th key={column.key}>{column.label}</th>)}<th className="action-heading">ACTIONS</th></tr></thead>
-          <tbody>{visibleRecords.length === 0 ? <tr><td colSpan={columns.length + 1} className="empty-state"><span>⌕</span><strong>No matching records</strong><small>Try a different search or add a new record.</small></td></tr> : visibleRecords.map(record => <tr key={record.id}>{columns.map(column => <td key={column.key}>{column.render ? column.render(record) : (record[column.key] || '—')}</td>)}<td><div className="row-actions">{rowActions(record).map((action, index) => <button key={index} type="button" className={action.className || 'row-action'} onClick={() => action.onClick(record)}>{action.label}</button>)}<button className="row-action edit-action" onClick={() => openEdit(record)}>Edit</button><button className="row-action delete-action" onClick={() => remove(record)}>Delete</button></div></td></tr>)}</tbody>
+          <tbody>{visibleRecords.length === 0 ? <tr><td colSpan={columns.length + 1} className="empty-state"><span>⌕</span><strong>No matching records</strong><small>Try a different search or add a new record.</small></td></tr> : visibleRecords.map(record => <tr key={record.id}>{columns.map(column => <td key={column.key}>{column.render ? column.render(record) : (record[column.key] || '—')}</td>)}<td><div className="row-actions">{rowActions(record).map((action, index) => <button key={index} type="button" className={action.className || 'row-action'} onClick={() => runAction(action, record)}>{action.label}</button>)}<button className="row-action edit-action" onClick={() => openEdit(record)}>Edit</button><button className="row-action delete-action" onClick={() => remove(record)}>Delete</button></div></td></tr>)}</tbody>
         </table></div>
         <div className="table-footnote">Showing {visibleRecords.length} of {records.length} records <span>Changes are saved in this browser for the demo.</span></div>
       </div>
@@ -73,6 +85,7 @@ export default function ManagementPage({
           field.type === 'textarea' ? <textarea id={'field-' + field.name} rows="3" required={field.required} placeholder={field.placeholder || ''} value={draft[field.name] ?? ''} onChange={event => setDraft(current => ({ ...current, [field.name]: event.target.value }))} /> :
           <input id={'field-' + field.name} type={field.type || 'text'} min={field.min} max={field.max} step={field.step} required={field.required} placeholder={field.placeholder || ''} value={draft[field.name] ?? ''} onChange={event => setDraft(current => ({ ...current, [field.name]: event.target.value }))} />}
           {field.help && <small className="field-help">{field.help}</small>}</div>)}</div>
+          {saveError && <p className="form-error" role="alert">{saveError}</p>}
           <div className="modal-actions"><button type="button" className="secondary-button" onClick={closeModal}>Cancel</button><button type="submit" className="primary-button">{editing ? 'Save changes' : 'Create record'}</button></div>
         </form>
       </section></div>}
