@@ -14,9 +14,9 @@ export default function Attendance() {
     { name: 'status', label: 'Attendance status', type: 'select', required: true, options: ['Present', 'Absent', 'Half Day', 'Leave'] },
   ];
   function save(draft, editing) {
-    if (!draft.staff || !draft.date) { window.alert('Select a staff member and date.'); return; }
+    if (!draft.staff || !draft.date) { window.alert('Select a staff member and date.'); return false; }
     const duplicate = attendance.some(item => item.staff === draft.staff && item.date === draft.date && item.id !== editing?.id);
-    if (duplicate) { window.alert('Attendance for this staff member and date already exists. Edit the existing record instead.'); return; }
+    if (duplicate) { window.alert('Attendance for this staff member and date already exists. Edit the existing record instead.'); return false; }
     const record = { ...draft };
     setAttendance(current => editing ? current.map(item => item.id === editing.id ? { ...record, id: editing.id } : item) : [...current, createRecord(record)]);
   }
