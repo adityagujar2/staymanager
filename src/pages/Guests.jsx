@@ -24,7 +24,7 @@ export default function Guests() {
   function save(draft, editing) {
     if (!draft.name?.trim() || !/^\+?[0-9\s-]{8,15}$/.test(draft.phone || '')) {
       window.alert('Enter the guest name and a valid phone number.');
-      return;
+      return false;
     }
     const guest = { ...draft, name: draft.name.trim(), phone: draft.phone.trim(), monthlyRent: Number(draft.monthlyRent) };
     setGuests(current => editing ? current.map(item => item.id === editing.id ? { ...guest, id: editing.id } : item) : [...current, createRecord(guest)]);
