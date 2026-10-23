@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useStayManager } from '../context/StayManagerContext.jsx';
 
 function emptyDraft(fields) {
   return fields.reduce((draft, field) => {
@@ -20,6 +21,7 @@ export default function ManagementPage({
   const [editing, setEditing] = useState(null);
   const [draft, setDraft] = useState(() => emptyDraft(fields));
   const [saveError, setSaveError] = useState('');
+  const { apiEnabled } = useStayManager();
 
   const visibleRecords = useMemo(() => records.filter(record => {
     const text = Object.values(record).join(' ').toLowerCase();
@@ -75,7 +77,7 @@ export default function ManagementPage({
         <div className="table-scroll"><table className="data-table"><thead><tr>{columns.map(column => <th key={column.key}>{column.label}</th>)}<th className="action-heading">ACTIONS</th></tr></thead>
           <tbody>{visibleRecords.length === 0 ? <tr><td colSpan={columns.length + 1} className="empty-state"><span>⌕</span><strong>No matching records</strong><small>Try a different search or add a new record.</small></td></tr> : visibleRecords.map(record => <tr key={record.id}>{columns.map(column => <td key={column.key}>{column.render ? column.render(record) : (record[column.key] || '—')}</td>)}<td><div className="row-actions">{rowActions(record).map((action, index) => <button key={index} type="button" className={action.className || 'row-action'} onClick={() => runAction(action, record)}>{action.label}</button>)}<button className="row-action edit-action" onClick={() => openEdit(record)}>Edit</button><button className="row-action delete-action" onClick={() => remove(record)}>Delete</button></div></td></tr>)}</tbody>
         </table></div>
-        <div className="table-footnote">Showing {visibleRecords.length} of {records.length} records <span>Changes are saved in this browser for the demo.</span></div>
+        <div className="table-footnote">Showing {visibleRecords.length} of {records.length} records <span>{apiEnabled ? 'Changes are saved through the connected API.' : 'Changes are saved in this browser for the demo.'}</span></div>
       </div>
 
       {modalOpen && <div className="modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) closeModal(); }}><section className="record-modal" role="dialog" aria-modal="true" aria-labelledby="record-modal-title">
