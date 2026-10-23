@@ -18,7 +18,7 @@ const columns = [
 export default function Maintenance() {
   const { maintenance, setMaintenance } = useStayManager();
   function save(draft, editing) {
-    if (!draft.title?.trim() || !draft.room?.trim()) { window.alert('Enter the issue and room or area.'); return; }
+    if (!draft.title?.trim() || !draft.room?.trim()) { window.alert('Enter the issue and room or area.'); return false; }
     const task = { ...draft, title: draft.title.trim(), room: draft.room.trim() };
     setMaintenance(current => editing ? current.map(item => item.id === editing.id ? { ...task, id: editing.id } : item) : [...current, createRecord(task)]);
   }
