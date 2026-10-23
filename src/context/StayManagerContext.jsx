@@ -42,8 +42,9 @@ function readStored(key, fallback) {
 }
 
 function usePersistentState(key, fallback) {
-  const [value, setValue] = useState(() => readStored(key, fallback));
+  const [value, setValue] = useState(() => API_BASE_URL ? fallback : readStored(key, fallback));
   useEffect(() => {
+    if (API_BASE_URL) return;
     try { localStorage.setItem(key, JSON.stringify(value)); }
     catch (error) { console.warn('Unable to save demo data in this browser:', error); }
   }, [key, value]);
