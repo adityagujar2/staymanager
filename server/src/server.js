@@ -33,6 +33,10 @@ app.use((error, _req, res, _next) => {
 });
 
 async function start() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret || secret.length < 32 || secret === 'replace-this-with-a-long-random-secret') {
+    throw new Error('Set JWT_SECRET to a unique random value of at least 32 characters in server/.env.');
+  }
   const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error('MONGODB_URI is required. Copy server/.env.example to server/.env and configure it.');
   await mongoose.connect(uri);
