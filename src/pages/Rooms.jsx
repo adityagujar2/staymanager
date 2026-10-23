@@ -23,7 +23,7 @@ export default function Rooms() {
     const occupied = Number(draft.occupied);
     if (!draft.number?.trim() || capacity < 1 || occupied < 0 || occupied > capacity) {
       window.alert('Please enter a room number and make sure occupied beds are between zero and total beds.');
-      return;
+      return false;
     }
     const room = { ...draft, capacity, occupied, monthlyRent: Number(draft.monthlyRent), status: occupied >= capacity ? 'Full' : occupied === 0 ? 'Vacant' : 'Available' };
     setRooms(current => editing ? current.map(item => item.id === editing.id ? { ...room, id: editing.id } : item) : [...current, createRecord(room)]);
