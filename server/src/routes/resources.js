@@ -57,7 +57,7 @@ router.post('/:resource', async (req, res, next) => {
 router.put('/:resource/:id', async (req, res, next) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ message: 'Invalid record ID.' });
-    const payload = safePayload(req.body);
+    const payload = safePayload(req.body, req.params.resource);
     if (!payload) return res.status(400).json({ message: 'A JSON object is required.' });
     const record = await req.Resource.findByIdAndUpdate(req.params.id, payload, { new: true, runValidators: true, strict: 'throw' });
     if (!record) return res.status(404).json({ message: 'Record not found.' });
