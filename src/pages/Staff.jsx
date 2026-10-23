@@ -1,5 +1,5 @@
 import ManagementPage from '../components/ManagementPage.jsx';
-import { createRecord, useStayManager } from '../context/StayManagerContext.jsx';
+import { useStayManager } from '../context/StayManagerContext.jsx';
 
 const fields = [
   { name: 'name', label: 'Full name', required: true },
@@ -16,11 +16,11 @@ const columns = [
 ];
 
 export default function Staff() {
-  const { staff, setStaff } = useStayManager();
+  const { staff, saveRecord, deleteRecord } = useStayManager();
   function save(draft, editing) {
     if (!draft.name?.trim() || !draft.phone?.trim()) { window.alert('Enter the staff member name and phone number.'); return false; }
     const person = { ...draft, name: draft.name.trim(), phone: draft.phone.trim() };
-    setStaff(current => editing ? current.map(item => item.id === editing.id ? { ...person, id: editing.id } : item) : [...current, createRecord(person)]);
+    return saveRecord('staff', person, editing);
   }
-  return <ManagementPage title="Staff" description="Maintain a clear record of your property team, roles, and shifts." records={staff} fields={fields} columns={columns} onSave={save} onDelete={id => setStaff(current => current.filter(person => person.id !== id))} addLabel="Add staff" searchPlaceholder="Search name, role, or phone..." filterKey="status" filterOptions={['Active', 'On Leave', 'Inactive']} summary={[{ label: 'Team members', value: staff.length }, { label: 'Active staff', value: staff.filter(person => person.status === 'Active').length }, { label: 'On leave', value: staff.filter(person => person.status === 'On Leave').length }, { label: 'Different roles', value: new Set(staff.map(person => person.role)).size }]} />;
+  return <ManagementPage title="Staff" description="Maintain a clear record of your property team, roles, and shifts." records={staff} fields={fields} columns={columns} onSave={save} onDelete={id => deleteRecord('staff', id)} addLabel="Add staff" searchPlaceholder="Search name, role, or phone..." filterKey="status" filterOptions={['Active', 'On Leave', 'Inactive']} summary={[{ label: 'Team members', value: staff.length }, { label: 'Active staff', value: staff.filter(person => person.status === 'Active').length }, { label: 'On leave', value: staff.filter(person => person.status === 'On Leave').length }, { label: 'Different roles', value: new Set(staff.map(person => person.role)).size }]} />;
 }
