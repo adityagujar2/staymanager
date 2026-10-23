@@ -25,7 +25,7 @@ export default function Payments() {
   function save(draft, editing) {
     if (!draft.guest?.trim() || Number(draft.amount) <= 0 || !draft.dueDate) {
       window.alert('Enter a guest name, positive amount, and due date.');
-      return;
+      return false;
     }
     const record = { ...draft, guest: draft.guest.trim(), amount: Number(draft.amount), paymentDate: draft.status === 'Paid' ? (draft.paymentDate || today()) : '' };
     setPayments(current => editing ? current.map(item => item.id === editing.id ? { ...record, id: editing.id } : item) : [...current, createRecord(record)]);
