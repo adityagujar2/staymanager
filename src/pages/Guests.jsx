@@ -1,5 +1,5 @@
 import ManagementPage from '../components/ManagementPage.jsx';
-import { createRecord, money, today, useStayManager } from '../context/StayManagerContext.jsx';
+import { money, today, useStayManager } from '../context/StayManagerContext.jsx';
 
 const baseFields = [
   { name: 'name', label: 'Full name', required: true, placeholder: 'Resident full name' },
@@ -19,7 +19,7 @@ const columns = [
 ];
 
 export default function Guests() {
-  const { guests, setGuests, rooms } = useStayManager();
+  const { guests, rooms, saveRecord, deleteRecord } = useStayManager();
   const fields = baseFields.map(field => field.name === 'room' ? { ...field, options: rooms.map(room => ({ value: room.number, label: 'Room ' + room.number + ' · ' + room.type })) } : field);
   function save(draft, editing) {
     if (!draft.name?.trim() || !/^\+?[0-9\s-]{8,15}$/.test(draft.phone || '')) {
@@ -27,7 +27,7 @@ export default function Guests() {
       return false;
     }
     const guest = { ...draft, name: draft.name.trim(), phone: draft.phone.trim(), monthlyRent: Number(draft.monthlyRent) };
-    setGuests(current => editing ? current.map(item => item.id === editing.id ? { ...guest, id: editing.id } : item) : [...current, createRecord(guest)]);
+    return saveRecord('guests', guest, editing);
   }
-  return <ManagementPage title="Guests" description="Keep resident information, room assignments, and stay dates organized." records={guests} fields={fields} columns={columns} onSave={save} onDelete={id => setGuests(current => current.filter(guest => guest.id !== id))} addLabel="Add guest" searchPlaceholder="Search by guest name, phone, or room..." filterKey="status" filterOptions={['Active', 'Checked Out']} summary={[{ label: 'Total residents', value: guests.length }, { label: 'Currently staying', value: guests.filter(guest => guest.status === 'Active').length }, { label: 'Monthly rent value', value: money(guests.filter(guest => guest.status === 'Active').reduce((sum, guest) => sum + Number(guest.monthlyRent || 0), 0)) }, { label: 'Checked out', value: guests.filter(guest => guest.status !== 'Active').length }]} />;
+  return <ManagementPage title="Guests" description="Keep resident information, room assignments, and stay dates organized." records={guests} fields={fields} columns={columns} onSave={save} onDelete={id => deleteRecord('guests', id)} addLabel="Add guest" searchPlaceholder="Search by guest name, phone, or room..." filterKey="status" filterOptions={['Active', 'Checked Out']} summary={[{ label: 'Total residents', value: guests.length }, { label: 'Currently staying', value: guests.filter(guest => guest.status === 'Active').length }, { label: 'Monthly rent value', value: money(guests.filter(guest => guest.status === 'Active').reduce((sum, guest) => sum + Number(guest.monthlyRent || 0), 0)) }, { label: 'Checked out', value: guests.filter(guest => guest.status !== 'Active').length }]} />;
 }
