@@ -1,57 +1,69 @@
 # StayManager 🏠
 
-A PG and Guest House Management System built with React and Vite. The project is being developed incrementally, with a planned Node.js/Express and MongoDB backend.
+A responsive PG and guest-house management app with a React/Vite frontend and an Express/MongoDB API. It is designed for room occupancy, resident records, rent tracking, staff, attendance, and maintenance.
 
-## Current frontend modules
+## Features
 
-- Dashboard overview
-- Rooms management
-- Guest management
-- Payments tracking
-- Staff management
-- Attendance
-- Maintenance
-- Login screen and protected-route support planned
+- Dashboard overview for occupancy, guests, rent, and maintenance
+- Rooms, Guests, Payments, Staff, Attendance, and Maintenance pages
+- Shared create/edit forms, search, status filters, and delete actions
+- Payment status action for marking rent as paid
+- Responsive sidebar, tables, and forms for desktop and mobile
+- Demo mode with browser-local storage
+- Optional API mode with JWT login and MongoDB persistence
 
-## Tech stack
+## Technology
 
-- React
-- Vite
-- React Router
-- Bootstrap
-- Custom CSS
+- Frontend: React, Vite, React Router, Bootstrap, custom CSS
+- Backend: Node.js, Express, Mongoose, MongoDB
+- Authentication: bcrypt password hashing and JWT bearer tokens
 
-## Run locally
+## Start the frontend in demo mode
 
-1. Install Node.js (LTS).
-2. Clone the repository:
+Requires Node.js 20 or newer.
+
+```bash
+npm install
+npm run dev
+```
+
+Open the local URL shown by Vite. In demo mode, any non-empty email and password will enter the frontend. This mode stores demo records in the current browser and is not secure authentication.
+
+## Enable the backend
+
+1. Make sure MongoDB is running locally or create a MongoDB database.
+2. Copy `server/.env.example` to `server/.env`.
+3. Set `MONGODB_URI` and replace `JWT_SECRET` with a unique random secret at least 32 characters long.
+4. In a terminal:
 
    ```bash
-   git clone https://github.com/adityagujar2/staymanager.git
-   cd staymanager
-   ```
-
-3. Install dependencies:
-
-   ```bash
+   cd server
    npm install
+   npm run dev
    ```
 
-4. Start the development server:
+5. In the project root, copy `.env.example` to `.env` and set `VITE_API_BASE_URL=http://localhost:5000/api`.
+6. Start or restart the frontend:
 
    ```bash
    npm run dev
    ```
 
-Open the local URL printed by Vite in your terminal.
+7. On the login page, choose **First time here? Set up administrator** to create the first API administrator. Later, sign in with that account.
 
-## Development status
+The API health endpoint is `http://localhost:5000/api/health`. When API mode is enabled, the app uses the authenticated API for CRUD operations rather than storing residents and other records in browser local storage.
 
-This project is under active development. Some frontend pages currently use sample/local state and data, so changes may not persist after a page reload. Database persistence, API integration, authentication hardening, testing, and deployment are planned next.
+## Main API routes
 
-## Security
+- `POST /api/auth/register` for initial administrator setup
+- `POST /api/auth/login` and `GET /api/auth/me`
+- CRUD endpoints for `/api/rooms`, `/api/guests`, `/api/payments`, `/api/staff`, `/api/attendance`, and `/api/maintenance`
 
-Never commit API keys, database credentials, real guest information, passwords, or environment files. Use `.env.example` for placeholder environment variable names only.
+Protected API requests use `Authorization: Bearer <token>`.
+
+## Important notes
+
+This is an actively developed portfolio project, not a production-ready property-management service. Before using it with real resident or payment data, add formal security review, rate limiting, automated tests, backups, audit logs, deployment configuration, and carefully managed secrets. Demo data is fictional.
 
 ## Author
 
