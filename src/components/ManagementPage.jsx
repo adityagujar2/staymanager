@@ -43,7 +43,8 @@ export default function ManagementPage({
   }
   function submit(event) {
     event.preventDefault();
-    onSave(draft, editing);
+    const result = onSave(draft, editing);
+    if (result === false) return;
     closeModal();
   }
   function remove(record) {
