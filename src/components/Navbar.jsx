@@ -14,7 +14,7 @@ const titles = {
 export default function Navbar({ onMenuClick }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useStayManager();
+  const { logout, apiEnabled } = useStayManager();
   const [title, subtitle] = titles[location.pathname] || ['StayManager', 'Property operations'];
   function handleLogout() {
     logout();
@@ -27,7 +27,7 @@ export default function Navbar({ onMenuClick }) {
         <div><h1>{title}</h1><p>{subtitle}</p></div>
       </div>
       <div className="topbar-actions">
-        <span className="environment-pill"><span /> Demo workspace</span>
+        <span className="environment-pill"><span /> {apiEnabled ? 'Connected API' : 'Demo workspace'}</span>
         <div className="profile-avatar">A</div>
         <div className="profile-text"><strong>Admin</strong><small>Property manager</small></div>
         <button className="logout-button" onClick={handleLogout}>Sign out</button>
