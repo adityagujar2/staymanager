@@ -1,5 +1,5 @@
 import ManagementPage from '../components/ManagementPage.jsx';
-import { createRecord, today, useStayManager } from '../context/StayManagerContext.jsx';
+import { today, useStayManager } from '../context/StayManagerContext.jsx';
 
 const fields = [
   { name: 'title', label: 'Issue or task', required: true, placeholder: 'e.g. Bathroom tap leakage', fullWidth: true },
@@ -16,11 +16,11 @@ const columns = [
   { key: 'status', label: 'STATUS', render: item => <span className={'status-badge status-' + item.status.toLowerCase().replaceAll(' ', '-')}>{item.status}</span> },
 ];
 export default function Maintenance() {
-  const { maintenance, setMaintenance } = useStayManager();
+  const { maintenance, saveRecord, deleteRecord } = useStayManager();
   function save(draft, editing) {
     if (!draft.title?.trim() || !draft.room?.trim()) { window.alert('Enter the issue and room or area.'); return false; }
     const task = { ...draft, title: draft.title.trim(), room: draft.room.trim() };
-    setMaintenance(current => editing ? current.map(item => item.id === editing.id ? { ...task, id: editing.id } : item) : [...current, createRecord(task)]);
+    return saveRecord('maintenance', task, editing);
   }
-  return <ManagementPage title="Maintenance" description="Log repair requests and follow each task through to completion." records={maintenance} fields={fields} columns={columns} onSave={save} onDelete={id => setMaintenance(current => current.filter(item => item.id !== id))} addLabel="Add request" searchPlaceholder="Search issue, room, or priority..." filterKey="status" filterOptions={['Open', 'In Progress', 'Completed']} summary={[{ label: 'Total requests', value: maintenance.length }, { label: 'Open', value: maintenance.filter(item => item.status === 'Open').length }, { label: 'In progress', value: maintenance.filter(item => item.status === 'In Progress').length }, { label: 'Completed', value: maintenance.filter(item => item.status === 'Completed').length }]} />;
+  return <ManagementPage title="Maintenance" description="Log repair requests and follow each task through to completion." records={maintenance} fields={fields} columns={columns} onSave={save} onDelete={id => deleteRecord('maintenance', id)} addLabel="Add request" searchPlaceholder="Search issue, room, or priority..." filterKey="status" filterOptions={['Open', 'In Progress', 'Completed']} summary={[{ label: 'Total requests', value: maintenance.length }, { label: 'Open', value: maintenance.filter(item => item.status === 'Open').length }, { label: 'In progress', value: maintenance.filter(item => item.status === 'In Progress').length }, { label: 'Completed', value: maintenance.filter(item => item.status === 'Completed').length }]} />;
 }
